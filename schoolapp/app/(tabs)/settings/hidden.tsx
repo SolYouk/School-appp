@@ -37,7 +37,13 @@ export default function HiddenContentScreen() {
   }, []);
 
   const loadHiddenContent = async () => {
-    if (!currentUser?.uid) return;
+    useEffect(() => {
+  const unsub = onAuthStateChanged(auth, (user) => {
+    if (user) loadHiddenContent(user.uid);
+    else setLoading(false);
+  });
+  return unsub;
+}, []);
     setLoading(true);
     try {
       const userDoc = await getDoc(doc(db, "users", currentUser.uid));
